@@ -1,55 +1,67 @@
 //<script type="text/jsx">
 
-
 function FormularioRegistro() {
+  const [form] = Form.useForm();
 
-    const guardarFormulario = (datosFormulario) => {
+  const guardarFormulario = (datosFormulario) => {
+    notificacionGuardando("Guardando usuario");
 
-        console.log(datosFormulario)
-    }
+    const id = v4();
 
-    return (
-      <div className="px-20">
-        <h2 className="text-center font-bold text-xl my-6">Formulario de Registro</h2>
-        <Form
+    // Desestructura los datos del formulario
+    const { nombreCompleto, correo, contrasenia } = datosFormulario;
+
+    google.script.run.withSuccessHandler(({titulo, descripcion}) => {
+      notificacionTareaTerminada(titulo, descripcion);
+      form.resetFields();
+    }).guardarUsuario({ id, nombreCompleto, correo, contrasenia });
+  }
+
+  return (
+    <div className="px-20">
+      <h2 className="text-center font-bold text-xl my-6">Formulario de Registro</h2>
+      <Form
+        form={form}
         onFinish={guardarFormulario} 
-        layout="vertical">
-          
-          <Item 
+        layout="vertical"
+      >
+        <Item 
           name="nombreCompleto" 
           label="Nombre completo"
           rules={[
-            {required: true, message: "El campo de Nombre es requerido para el registro" }
-          ]}>
-            <Input />
-          </Item>
-  
-          <Item 
+            { required: true, message: "El campo de Nombre es requerido para el registro" }
+          ]}
+        >
+          <Input />
+        </Item>
+
+        <Item 
           name="correo" 
           label="Correo"
-          rules={[{type: "email", message: "El formato no coincide con un correo valido" },
-            {required: true, message: "El campo de Correo es requerido para el registro" }
-          ]}>
-            <Input />
-          </Item>
-  
-          <Item 
+          rules={[
+            { type: "email", message: "El formato no coincide con el formato de un correo válido" },
+            { required: true, message: "Este campo no puede ir vacío" }
+          ]}
+        >
+          <Input />
+        </Item>
+
+        <Item 
           name="contrasenia" 
           label="Contraseña"
           rules={[
-            {required: true, message: "El campo de Contraseña es requerido para el registro" }
-          ]}>
-            <Password />
-          </Item>
+            { required: true, message: "El campo de Contraseña es requerido para el registro" }
+          ]}
+        >
+          <Password />
+        </Item>
 
-          <Item className="text-center">
-            <Button htmlType="submit">Guardar</Button>
-          </Item>
-
-        </Form>
-      </div>
-    );
-  }
-  
+        <Item className="text-center">
+          <Button htmlType="submit">Guardar</Button>
+        </Item>
+      </Form>
+    </div>
+  );
+}
 
 //</script>
